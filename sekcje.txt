@@ -1,0 +1,92 @@
+git commands: https://git-scm.com/docs
+
+sec3(25-50) Git basics
+-git status
+-git init
+-git add .
+-git config user.email "test@test.com" - deklaracja usera dla bieżącego repo
+-git config user.name "John Doe"       - deklaracja maila dla bieżącego repo
+-git config --global user.email "test@test.com" - deklaracja usera globalna
+-git config --global user.name "John Doe"       - deklaracja maila globalna
+-git commit -m "message text"
+-git log - lista commitów
+-git checkout commitId - checkout do danego commita (detached head - head wskazuje na commit, nie jesteśmy w żadnym branchu)
+-git checkout branch - checkout do ostatniego commita z tego brancha (head wskazuje ostatni commit z brancha, jesteśmy w branchu)
+-git branch - lista branchy
+-git branch new-branch-name - tworzenie nowego brancha
+-git checkout -b new-branch-name - tworzenie nowego brancha i checkout do niego
+-git merge branch-name - merge podanego brancha do bieżącego
+-git switch branch = git checkout branch
+-git switch -c new-branch-name = git checkout -b new-branch-name
+-git ls-files - list of staged files (lista plików w staging area)
+-git rm file = delete file + git add file (skasowanie pliku i wprowadzenie informacji o skasowaniu do staging area, tj. usunięcie ze staging area)
+COMMITOWANE SĄ ZMIANY, KTÓRE ZASZŁY W STAGING AREA
+-git restore file = git checkout file - przywrócić plik/zawartość pliku (jeśli zmiany są jeszcze unstaged)
+-git restore . = git checkout . - przywrócić wszystkie pliki (jeśli zmiany są jeszcze unstaged)
+-git clean -dn - kasowanie untracked files (tylko sprawdzenie - wyświetla pliki)
+-git clean -df - kasowanie untracked files (faktyczne kasowanie)
+-git restore --staged file = git reset file - undo git add file
+-git reset --soft HEAD~1 - cofa HEAD o 1, kasuje tylko commit (staging area i pliki zostają) = undo git commit -m "sth"
+-git reset HEAD~1        - cofa HEAD o 1, kasuje commit, usuwa ze staging area (pliki zostają) = undo git commit -m "sth" + undo git add .
+-git reset --hard HEAD~1 - cofa HEAD o 1, kasuje commit, usuwa ze staging area, kasuje pliki =  undo git commit -m "sth" + undo git add . + del files
+-git branch -m new_name - reaname: zmiana nazwy bieżącego brancha
+-git branch -d branch_name - kasowanie brancha (safe - jeśli już był mergowany)
+-git branch -D branch_name - kasowanie brancha (force)
+-git branch new-branch-name commitId - tworznie nowego brancha i dopięcie go do konkretnego commita (np. do commita zrobionego po detached head)
+
+sec4(51-65) Git advanced
+-git stash, git stash push -m "message text"
+-git stash apply, git stash apply 2 - apply stasha, ale nie znika z listy
+-git stash pop, git stash pop 2 - apply stasha, znika z listy
+-git stash drop 0, git stash clear - czyszczenie stasha
+-git reflog - (lista zmian z ostatnich 30 dni, również np. usunięte commity)
+-git reset --hard commitId - np. przywrócenie skasowanego commita (poleceniem git reset --hard HEAD~1)
+-a: git merge --squash branch-name (zaciągnięcie zmian z brancha do staging area, nie są tworzone żadne commity)
+ b: git commit -m "msg" (ręczne zacommitowanie tych zmian jako 1 commit)
+ a+b: SQUASH MERGE: merge brancha jako 1 commit
+-a: git rebase master - rebase brancha: bazą brancha staje się ostani commit mastera a commity brancha są tworzone(!) po nim na nowo (mają nowe id'ki)
+ b: git switch master
+ c: git merge master (teraz będzie fast-forward)
+ a+b+c: REBASE MERGE (UWAGA: rebase re-writes commits history - DO NOT use it in public repositories)
+-git merge --abort - anulowanie merge'a (gdy są konflikty)
+-git log --merge - pokazuje commity, które są aktualnie mergowane (podczas konfliktu)
+-git diff - pokazuje konflikt
+-git cherry-pick commitId - w bieżącym branchu jest tworzona kopia commita o podanym ID (najczęściej: CHERRY PICK commita z feature brancha do mastera)
+-git tag - lista tagów (tylko nazwy)
+-git tag tagName commitId - oznaczenie tagiem danego commita
+-git tag tagName - oznaczenie tagiem bieżącego (ostatniego) commita (często taguje się wersje aplikacji np. git tag 1.0)
+-git show tagName - pokazuje m.in. id commita oznaczonego danym tagiem
+-git checkout tagName = git checkout commitID - checkout, detached head
+-git tag -d tagName - usunięcie taga
+-git tag -a tagName -m "tag message" - annotated tag - z message, informacją kto i kiedy stworzył (można zobaczyć przez: git show tagName)
+
+sec5(66-84) Understanding GitHub
+-git remote add origin repoURL - ustanowienie połączenia z remote repository, słowo 'origin' staje się aliasem podanego url'a
+-git remote - lista remote repositories (np. 'origin')
+-git remote show origin - wyświetla dodatkowe info o origin (remote repo), m.in. o branchach
+-git push origin master - push zacommitowanych zmian do origin (remote repo), branch master
+-creating PAT (Personal Access Token) Settings|Developer settings|Personal access tokens
+-windows credential manager (menadżer poświadczeń - z panelu sterowania) - gdzie windows przechowuje PAT
+-git branch -a - lista wszystkich branchy: local branches i Remote Tracking Branches np. remotes/origin/master (lokalna kopia origin master)
+-git branch -r - lista Remote Tracking Branches (tu już bez członu remote/)
+-jak działa git push origin master: 
+ a: dane trafiają najpierw do lokalnego Remote Tracking Branch'a: remotes/origin/master 
+ b: potem z lokalnego remotes/origin/master trafiają do zdalego origin master
+-git pull orign master: 
+ a: git fetch - dane z origin trafiają do Remote Tracking Branches (remotes/origin/master)
+ b: git merge - merge remotes/origin/master do master
+-git ls-remote - lista branchy na origin (jedyny sposób, żeby zobaczyć jakie branche są w repo!)
+-git fetch origin - update Remote Tracking Branches
+-git branch --track branchName origin/branchName - create a new Local Tracking Branch based on Remote Tracking Branch (np. po git fetch)
+ LUB LEPIEJ:
+ git checkout branchName - jeśli branchName jest Remote Tracking Branch to zostanie utworzony nowy Local Tracking Branch (i przełączymy się na niego)
+ (np. git branch -a: remotes/origin/feature | git checkout feature - utworzymy (mimo braku -b!) branch feature połączony z remotes/origin/feature)
+-w Local Tracking Branch wystarczy samo git push, git pull - dane trafiają przez Remote Tracking Branch do origin
+-git branch -vv - lista local branchy z info czy branch jest zwykły lokalny czy Local Tracking Branch
+-git clone url - klonowanie repo
+-git push -u origin branchName - (u: upstream) gdy mamy nowy lokalny branch i chcemy go wrzucić do repo i od razu zmienić ten branch w Local Tracking Branch
+-git branch --set-upstream-to=origin/branchName branchName - zmiana brancha lokalnego w Local Tracking Branch
+-git branch --delete --remotes remoteTrackingBranch(bez przedrostka remotes/) - kasowanie Remote Tracking Brancha (bez kasowania brancha w repo)
+-git push origin --delete branchName(bez przedrostka refs/heads/) - kasowanie brancha w repo (przy okazji kasuje też Remote Tracking Brancha)
+-git push --force origin master - kasowanie commitów w repo np. (po git reset) - master jest cofnięty w stosunku do repo, trzeba --force (NIEBEZPIECZNE!)
+
