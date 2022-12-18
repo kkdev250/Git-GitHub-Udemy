@@ -46,7 +46,7 @@ sec4(51-65) Git advanced
  a+b: SQUASH MERGE: merge brancha jako 1 commit
 -a: git rebase master - rebase brancha: bazą brancha staje się ostani commit mastera a commity brancha są tworzone(!) po nim na nowo (mają nowe id'ki)
  b: git switch master
- c: git merge master (teraz będzie fast-forward)
+ c: git merge branch-name (teraz będzie fast-forward)
  a+b+c: REBASE MERGE (UWAGA: rebase re-writes commits history - DO NOT use it in public repositories)
 -git merge --abort - anulowanie merge'a (gdy są konflikty)
 -git log --merge - pokazuje commity, które są aktualnie mergowane (podczas konfliktu)
